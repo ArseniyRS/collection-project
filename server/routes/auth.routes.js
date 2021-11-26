@@ -1,13 +1,16 @@
-const Router = require("express");
-const User = require("../models/User");
-const bcrypt = require("bcryptjs");
-const { check, validationResult } = require("express-validator");
-const jwt = require("jsonwebtoken");
-
+import {Router} from 'express'
+import bcrypt from 'bcryptjs'
+import {check, validationResult} from "express-validator";
+import jwt from 'jsonwebtoken'
+import cors from 'cors'
+import fileService from '../services/fileService.js'
+import File from '../models/File.js'
+import User from '../models/User.js'
 const router = new Router();
 
 router.post(
   "/sign-up",
+  cors(),
   [
     check("email", "Uncorrect email").isEmail(),
     check(
@@ -21,7 +24,7 @@ router.post(
       const error = validationResult(req);
       if (!error.isEmpty())
         return res.status(400).json({ message: "Uncorrect request", error });
-      const { email, password } = req.body;
+      const { username, email, password } = req.body;
       const candidate = await User.findOne({ email });
       if (candidate) {
         return res
@@ -30,8 +33,9 @@ router.post(
       }
 
       const hashPassword = await bcrypt.hash(password, 8);
-      const user = new User({ email, password: hashPassword });
+      const user = new User({ username,  email, password: hashPassword });
       await user.save();
+      await fileService.createDir(new File({user: user.id, name: ''}))
       return res.json({ message: "User was created" });
     } catch (error) {
       console.log(error);
@@ -40,10 +44,10 @@ router.post(
   }
 );
 
-router.post("/sign-in", async (req, res) => {
+router.post("/sign-in", cors(), async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    const { email, username, password } = req.body;
+    const user = await User.findOne(email ? { email } : {username});
     if (!user) return res.status(404).json({ message: "User not found" });
     const isPassValid = bcrypt.compareSync(password, user.password);
     if (!isPassValid) {
@@ -57,6 +61,7 @@ router.post("/sign-in", async (req, res) => {
       user: {
         id: user.id,
         email: user.email,
+        username: user.username
       },
     });
   } catch (error) {
@@ -64,4 +69,4 @@ router.post("/sign-in", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router
