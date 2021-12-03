@@ -1,15 +1,16 @@
-import { useAppSelector } from "../hooks/redux";
+import {useAppSelector} from "../hooks/redux";
 import React from "react";
+import Disk from "../components/Disk/Disk";
 
 const MainPage = () => {
-  const { isAuthorized } = useAppSelector((state) => state.authReducer);
+    const {isAuthorized} = useAppSelector((state) => state.authReducer);
 
-  return (
-    <div>
-      <h1>MAIN PAGE</h1>
-      
-    </div>
-  );
+    return (
+        <div className={'container'}>
+            <Disk/>
+
+        </div>
+    );
 };
 
 export default MainPage;

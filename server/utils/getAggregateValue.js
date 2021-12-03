@@ -1,0 +1,1 @@
+export const getAggregateValue =  (value) => value[0][0]['max' || 'min' || 'sum'] || 0

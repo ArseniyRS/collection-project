@@ -1,18 +1,13 @@
 import fs from 'fs'
-import File from '../models/File.js'
+//import {File} from '../models/File.js'
 
 class FileService {
     createDir(file) {
-        console.log(file)
-        const filePath = `${process.env.FILE_PATH}\\${file.user}\\${file.path}`
+        const filePath = `${process.env.FILE_PATH}\\${file.UserId}\\${file.path}`
         return new Promise((res, rej) => {
             try {
-                if (!fs.existsSync(file)) {
-                    fs.mkdirSync(filePath)
-                    return res({message: 'File was created'})
-                } else {
-                    return rej({message: 'File already exist'})
-                }
+                fs.mkdirSync(filePath)
+                return res({message: 'File was created'})
             } catch (e) {
                 console.log(e)
                 return rej({message: 'File error'})
@@ -20,5 +15,6 @@ class FileService {
         })
     }
 }
+
 const fileService = new FileService()
 export default fileService

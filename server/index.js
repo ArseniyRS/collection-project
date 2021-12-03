@@ -1,11 +1,14 @@
 import express from 'express';
-import mongoose from 'mongoose'
 import dotenv from 'dotenv'
+
 dotenv.config();
-import authRouter from './routes/auth.routes.js'
+import authRouter from './routes/user.routes.js'
 import fileRouter from './routes/file.routes.js'
 import cors from 'cors'
+import sequelize from './db.js'
+
 const app = express();
+import routes from './routes/index.js'
 //const WSServer = require('express-ws')(app)
 
 
@@ -26,10 +29,10 @@ const app = express();
 // );
 app.use(cors())
 app.use(express.json());
+app.use('/api', routes)
 
-
-app.use("/api/auth", authRouter);
-app.use("/api/files", fileRouter);
+// app.use("/api/auth", authRouter);
+// app.use("/api/files", fileRouter);
 
 // app.ws('/'), (ws, req) =>{
 //   console.log('Подключение установлено')
@@ -39,21 +42,14 @@ app.use("/api/files", fileRouter);
 //   })
 // }
 const start = async () => {
-  //console.log(typeof process.env.DB_URL)
-  try {
-    mongoose
-      .connect(process.env.DB_URL, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      })
-      .then(() => {
-        console.log("connected");
-      });
-    app.listen(process.env.PORT, () => {
-      console.log("server started", process.env.PORT);
-    });
-  } catch (e) {
-    start();
-  }
+    try {
+        await sequelize.authenticate()
+        await sequelize.sync()
+        app.listen(process.env.PORT, () => {
+            console.log("server started", process.env.PORT);
+        });
+    } catch (e) {
+        start();
+    }
 };
 start();

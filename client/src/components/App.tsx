@@ -14,7 +14,6 @@ const App = () => {
     useEffect(() => {
         dispatch(checkSessionAction())
     }, [])
-    console.log(isAuthorized)
     return (
         <div>
             <TopNavBar/>
