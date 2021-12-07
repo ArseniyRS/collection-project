@@ -10,6 +10,6 @@ export const signInReq = (data) => instance.post("auth/sign-in", data);
 export const signUpReq = (data) => instance.post("auth/sign-up", data);
 
 
-export const getFilesReq = (dirId) => instance.get(`files${dirId ? '?parent=' + dirId : ''}`, getToken());
+export const getFilesReq = (folderId) => instance.get(`files${folderId ? '?parent=' + folderId : ''}`, getToken());
 export const createFileReq = (data) => instance.post(`files`, data, getToken());
-export const moveFileReq = (positions) => instance.post(`files/move`, positions, getToken());
+export const moveFileReq = (moveData) => instance.post(`files/move`, moveData, getToken());

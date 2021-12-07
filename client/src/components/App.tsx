@@ -18,12 +18,13 @@ const App = () => {
         <div>
             <TopNavBar/>
             <Switch>
-                <Route path={"/"} exact>
-                    {isAuthorized ? <MainPage/> : <Redirect to="/sign-in"/>}
-                </Route>
-                <Route path={["/sign-in", "/sign-up"]}>
+                <Route path={["/sign-in", "/sign-up"]} exact>
                     {!isAuthorized ? <AuthPage/> : <Redirect to={"/"} /> }
                 </Route>
+                <Route path={"/"} >
+                    {isAuthorized ? <MainPage/> : <Redirect to="/sign-in"/>}
+                </Route>
+
             </Switch>
         </div>
     );

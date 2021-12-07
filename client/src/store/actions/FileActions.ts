@@ -5,9 +5,9 @@ import {fileSlice} from "../reducers/FilesSlice";
 
 export const getFilesAction = createAsyncThunk(
     "files/get",
-    async (dirId: number, thunkAPI) => {
+    async (folderId: number, thunkAPI) => {
         try {
-            const {data} = await getFilesReq(dirId)
+            const {data} = await getFilesReq(folderId)
             return data
         } catch (e) {
             return thunkAPI.rejectWithValue(e.response.data.message || 'Ошибка')

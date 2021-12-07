@@ -3,10 +3,19 @@ import {useAppSelector} from "../../hooks/redux";
 import FileItem from "./FileItem";
 import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd'
 
-const FileList = () => {
+const FileList = ({moveHandler, openDirHandler}) => {
     const {files} = useAppSelector(state => state.fileReducer)
     const handleOnDragEnd = (res) => {
         console.log(res)
+        if (res.combine)
+            return moveHandler({
+                parent: res.combine.droppableId,
+                fileId: res.draggableId
+            })
+        return moveHandler({
+            old_index: res.source.index,
+            new_index: res.destination.index > files[files.length - 1].orderId ? res.destination.index - 1 : res.destination.index
+        })
     }
 
     return (
@@ -22,11 +31,11 @@ const FileList = () => {
                         <Droppable droppableId={file.id.toString()} key={file.id.toString()} isCombineEnabled>
                             {(provided) => (
                                 <div className="characters" {...provided.droppableProps} ref={provided.innerRef}>
-                                    <Draggable  draggableId={file.id.toString()} index={index}>
+                                    <Draggable draggableId={file.id.toString()} index={file.orderId}>
                                         {(provided) => (
                                             <div
                                                 ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                                                <FileItem {...file}/>
+                                                <FileItem openDir={openDirHandler}  {...file}/>
                                             </div>
                                         )}
                                     </Draggable>

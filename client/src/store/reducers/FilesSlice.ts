@@ -5,7 +5,8 @@ const initialState = {
     files: [],
     isLoading: false,
     error: '',
-    currentDir: null
+    currentDir: null,
+    dirCrumbs: []
 }
 
 
@@ -13,8 +14,14 @@ export const fileSlice = createSlice({
     name: 'file',
     initialState,
     reducers: {
-        endSort: (state, action: PayloadAction<any[]>) =>{
+        endSort: (state, action: PayloadAction<any[]>) => {
             state.files = action.payload
+        },
+        writeCurrentDir: (state, action: PayloadAction<number | null>) => {
+            state.currentDir = action.payload
+        },
+        writeDirCrumbs: (state, action: PayloadAction<any[] | null>) => {
+            state.dirCrumbs = [...state.dirCrumbs, action.payload]
         }
     },
     extraReducers: {
@@ -35,9 +42,8 @@ export const fileSlice = createSlice({
             state.error = ""
         },
         [createFileAction.fulfilled.type]: (state, action: PayloadAction<any[]>) => {
-            console.log('fuf')
             state.isLoading = false
-            state.files = [...state.files, action.payload]
+            state.files = action.payload
         },
         [createFileAction.rejected.type]: (state, action: PayloadAction<string>) => {
             state.isLoading = false
