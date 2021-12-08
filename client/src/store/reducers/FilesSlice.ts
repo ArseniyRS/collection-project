@@ -6,6 +6,7 @@ const initialState = {
     isLoading: false,
     error: '',
     currentDir: null,
+    textSearch: '',
     dirCrumbs: []
 }
 
@@ -21,7 +22,10 @@ export const fileSlice = createSlice({
             state.currentDir = action.payload
         },
         writeDirCrumbs: (state, action: PayloadAction<any[] | null>) => {
-            state.dirCrumbs = [...state.dirCrumbs, action.payload]
+            state.dirCrumbs = action.payload
+        },
+        writeTextSearch: (state, action: PayloadAction<string>) =>{
+            state.textSearch = action.payload
         }
     },
     extraReducers: {

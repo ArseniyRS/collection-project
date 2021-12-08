@@ -3,6 +3,7 @@ import {File} from '../models/models.js'
 import {createFileName} from "../utils/createFileName.js";
 import dbContext from "../db.js";
 import {getAggregateValue} from "../utils/getAggregateValue.js";
+import {Sequelize} from 'sequelize'
 
 class FileController {
     async createDir(req, res) {
@@ -33,12 +34,13 @@ class FileController {
 
     async getFiles(req, res) {
         try {
-            const {parent} = req.query
+            const {parent, search} = req.query
+            console.log(search)
             let files = []
-            if (parent)
-                files = await File.findAll({where: {UserId: req.user.id, FileId: parent}, order: ['orderId']})
+            if (search)
+                files = await File.findAll({where: {UserId: req.user.id, name: {[Sequelize.Op.like]: `%${search}%`}}})
             else
-                files = await File.findAll({where: {UserId: req.user.id, FileId: null}, order: ['orderId']})
+                files = await File.findAll({where: {UserId: req.user.id, FileId: parent || null}, order: ['orderId']})
             return res.json(files)
         } catch (e) {
             return res.status(500).json({message: 'Cant get files'})

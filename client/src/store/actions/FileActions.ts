@@ -2,12 +2,16 @@ import {createAsyncThunk} from "@reduxjs/toolkit";
 import {createFileReq, getFilesReq, moveFileReq} from "../../api";
 import {fileSlice} from "../reducers/FilesSlice";
 
+interface IGetFiles {
+    search?: string,
+    parent?: string
+}
 
 export const getFilesAction = createAsyncThunk(
     "files/get",
-    async (folderId: number, thunkAPI) => {
+    async (params: IGetFiles, thunkAPI) => {
         try {
-            const {data} = await getFilesReq(folderId)
+            const {data} = await getFilesReq(params)
             return data
         } catch (e) {
             return thunkAPI.rejectWithValue(e.response.data.message || 'Ошибка')

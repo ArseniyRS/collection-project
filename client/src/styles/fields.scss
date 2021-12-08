@@ -1,3 +1,13 @@
 .input-field{
     margin-bottom: 15px!important;
 }
+.search-field{
+    background: rgba(255,255,255, .3);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    & input{
+        padding: 5px;
+        color: #ffffff;
+    }
+}
