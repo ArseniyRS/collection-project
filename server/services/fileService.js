@@ -27,22 +27,20 @@ class FileService {
         })
     }
 
-    // const fromPath = `${process.env.FILE_PATH}\\${user}\\${from}`
-    // const toPath = `${process.env.FILE_PATH}\\${user}\\${move ? `${from}\\${to}` : to}`
-    // return new Promise((res, rej) => {
-    //     try {
-    //         // console.log(fromPath)
-    //         //console.log(toPath)
-    //         fs.rename(fromPath, toPath, function (err) {
-    //             if (err) {
-    //                 return rej({message: 'Move file error'})
-    //             }
-    //         })
-    //         return res({message: 'File was moved'})
-    //     } catch (e) {
-    //         return rej({message: 'Move file error'})
-    //     }
-    // })
+    deleteFile(path, type, user) {
+        return new Promise((res, rej) => {
+            try {
+                const joinedPath = `${process.env.FILE_PATH}\\${user}\\${path}`
+                if (type === 'dir')
+                    fs.rmSync(joinedPath, {recursive: true, force: true})
+                else
+                    fs.unlinkSync(joinedPath)
+                return res({message: 'File was deleted'})
+            } catch (e) {
+                return rej({message: 'File delete error'})
+            }
+        })
+    }
 }
 
 const fileService = new FileService()

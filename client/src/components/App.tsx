@@ -6,6 +6,8 @@ import AuthPage from "../pages/AuthPage";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import TopNavBar from "./TopNavBar/TopNavBar";
 import {checkSessionAction} from "../store/actions/AuthActions";
+import {ModalContext} from "./context/ModalContext";
+import DialogModal from "./DialogModal/DialogModal";
 
 const App = () => {
 
@@ -17,15 +19,16 @@ const App = () => {
     return (
         <div>
             <TopNavBar/>
-            <Switch>
-                <Route path={["/sign-in", "/sign-up"]} exact>
-                    {!isAuthorized ? <AuthPage/> : <Redirect to={"/"} /> }
-                </Route>
-                <Route path={"/"} >
-                    {isAuthorized ? <MainPage/> : <Redirect to="/sign-in"/>}
-                </Route>
-
-            </Switch>
+            <DialogModal>
+                <Switch>
+                    <Route path={["/sign-in", "/sign-up"]} exact>
+                        {!isAuthorized ? <AuthPage/> : <Redirect to={"/"}/>}
+                    </Route>
+                    <Route path={"/"}>
+                        {isAuthorized ? <MainPage/> : <Redirect to="/sign-in"/>}
+                    </Route>
+                </Switch>
+            </DialogModal>
         </div>
     );
 };

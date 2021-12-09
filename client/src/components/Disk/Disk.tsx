@@ -1,22 +1,20 @@
-import React, {useEffect} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import {createFileAction, getFilesAction, moveFileAction} from "../../store/actions/FileActions";
 import FileList from "./FileList";
 import '@s/disk.scss';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import {Button, TextField} from "@mui/material";
-import DialogModal from "../DialogModal/DialogModal";
 import {fileSlice} from "../../store/reducers/FilesSlice";
 import FileBreadcrumbs from "./FileBreadcrumbs";
 import {useHistory} from 'react-router-dom'
-import SearchIcon from "@mui/icons-material/Search";
-import {Search} from "@mui/icons-material";
 import FileSearch from "./FileSearch";
+import {ModalContext} from "../context/ModalContext";
 
 const Disk = ({openDialogModal}) => {
     const dispatch = useAppDispatch()
     const history = useHistory()
-    const {currentDir, dirCrumbs, textSearch, files} = useAppSelector(state => state.fileReducer)
+    const {currentDir, dirCrumbs, textSearch} = useAppSelector(state => state.fileReducer)
     useEffect(() => {
         dispatch(getFilesAction({parent: currentDir}))
     }, [currentDir])
@@ -31,6 +29,7 @@ const Disk = ({openDialogModal}) => {
         const res = dirCrumbs.reduce((prev, cur) => prev + `/${cur.name}`, '')
         history.push(res)
     }, [dirCrumbs])
+    const {openModal, setModalConfig} = useContext(ModalContext)
 
     const afterSubmit = (text) => {
         dispatch(createFileAction({
@@ -64,18 +63,19 @@ const Disk = ({openDialogModal}) => {
         <div className={'disk'}>
             <div className="disk-manager">
                 <div className="disk-btns">
-                    <DialogModal
-                        title='Новая папка'
-                        label='Название'
-                        afterSubmit={afterSubmit}
-                        component={(openDialogModal) => {
-                            return (
-                                <Button
-                                    className="disk-btns__create" variant={'contained'}
-                                    onClick={() => openDialogModal()}>Создать <CreateNewFolderIcon/></Button>
-                            )
-                        }}
-                    />
+                    <Button
+                        className="disk-btns__create" variant={'contained'}
+                        onClick={() => {
+                            setModalConfig({
+                                title: 'Создать папку',
+                                label: 'Название',
+                                defaultValue: name,
+                                okBtnLabel: 'ОК',
+                                cancelBtnLabel: 'Отмена',
+                                afterSubmit: (text) => afterSubmit(text)
+                            })
+                            openModal()
+                        }}>Создать <CreateNewFolderIcon/></Button>
                     {currentDir &&
                     <Button className="disk-btns__back" variant={'outlined'}
                             onClick={() => backDirHandler()}>Назад</Button>}
@@ -86,8 +86,6 @@ const Disk = ({openDialogModal}) => {
                     <FileSearch onSearch={searchFiles}/>
                 </div>
             </div>
-
-
             <FileList openDirHandler={openDirHandler} moveHandler={moveHandler}/>
         </div>
     );

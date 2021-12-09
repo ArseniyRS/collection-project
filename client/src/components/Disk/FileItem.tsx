@@ -1,8 +1,11 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useRef, useState} from 'react';
 import FolderIcon from '@mui/icons-material/Folder';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import {useOutsideAlerter} from "../../hooks/useOutsideDetect";
 import DialogModal from "../DialogModal/DialogModal";
+import {deleteFileAction, renameFileAction} from "../../store/actions/FileActions";
+import {useAppDispatch} from "../../hooks/redux";
+import {ModalContext} from "../context/ModalContext";
 
 
 const FileItem = ({id, name, size, updatedAt, FileId, type, openDir}) => {
@@ -31,15 +34,22 @@ const FileItem = ({id, name, size, updatedAt, FileId, type, openDir}) => {
 
             </div>
             {isOpenMenu &&
-            <FileItemMenu id={id} isOpen={isOpenMenu} closeMenu={closeMenu} anchor={elAnchor} pos={posMenu}/>
+            <FileItemMenu
+                id={id}
+                name={name}
+                isOpen={isOpenMenu}
+                closeMenu={closeMenu}
+                anchor={elAnchor}
+                pos={posMenu}/>
             }
         </>
     );
 };
-const FileItemMenu = ({id, isOpen, closeMenu, anchor, pos}) => {
+const FileItemMenu = ({id, isOpen, name, closeMenu, anchor, pos}) => {
+    const {openModal, setModalConfig} = useContext(ModalContext)
     const wrapperRef = useRef(null);
     useOutsideAlerter(wrapperRef, closeMenu);
-
+    const dispatch = useAppDispatch()
     return (
         <ul
             ref={wrapperRef}
@@ -50,19 +60,21 @@ const FileItemMenu = ({id, isOpen, closeMenu, anchor, pos}) => {
                 left: pos.x
             }}
         >
-            <DialogModal
-                title='Новая папка'
-                label='Название'
-                //afterSubmit={afterSubmit}
-                component={(openDialogModal) => {
-                    return <li className={'fileItem-menu__item'} onClick={()=>{
-                        openDialogModal()
-                        //closeMenu()
-
-                    }}>Переименовать</li>
-                }}/>
             <li className={'fileItem-menu__item'} onClick={() => {
-                // dispatch(logoutAction())
+                setModalConfig({
+                    title: 'Переменовать',
+                    label: 'Название',
+                    defaultValue: name,
+                    okBtnLabel: 'ОК',
+                    cancelBtnLabel: 'Отмена',
+                    afterSubmit: (name) => dispatch(renameFileAction({id, name}))
+                })
+                openModal()
+                closeMenu()
+            }}>Переименовать
+            </li>
+            <li className={'fileItem-menu__item'} onClick={() => {
+                dispatch(deleteFileAction(id))
                 closeMenu()
             }}>Удалить
             </li>

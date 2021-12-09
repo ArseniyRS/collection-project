@@ -5,5 +5,7 @@ const router = new Router()
 
 router.post('/', authMiddleware, fileController.createDir)
 router.get('/', authMiddleware, fileController.getFiles)
+router.delete('/', authMiddleware, fileController.deleteFile)
 router.post('/move', authMiddleware, fileController.move)
+router.post('/rename', authMiddleware, fileController.rename)
 export default router

@@ -32,6 +32,22 @@ class FileController {
         }
     }
 
+    async deleteFile(req, res) {
+        try {
+            const {id} = req.query
+            if(!id)
+                return res.json(400).badRequest({message: 'Id error'})
+            const file = await File.findOne({where: {id: id}})
+            await fileService.deleteFile(file.path, file.type, req.user.id)
+            await file.destroy({
+                where: {id: id, UserId: req.user.id,}
+            })
+            return res.json(file)
+        } catch (e) {
+            return res.status(500).json({message: 'Delete file error'})
+        }
+    }
+
     async getFiles(req, res) {
         try {
             const {parent, search} = req.query
@@ -46,7 +62,34 @@ class FileController {
             return res.status(500).json({message: 'Cant get files'})
         }
     }
-
+    async rename(req,res){
+        try{
+            const {id, name} = req.body
+            if(!id || !name)
+               return res.status.json(400).badRequest({message: 'Req message error'})
+            const file = await File.findOne({where: {id}})
+            const oldPathName = `${process.env.FILE_PATH}\\${req.user.id}\\${file.path}`
+            let newPathName =  ''
+            if(file.FileId){
+                const parentFile = await File.findOne({where: {id: file.FileId}})
+                newPathName = `${process.env.FILE_PATH}\\${req.user.id}\\${parentFile.path}\\${name}`
+                await file.update({
+                    path: `\\${parentFile.path}\\${name}`,
+                    name
+                })
+            }else{
+                newPathName = `${process.env.FILE_PATH}\\${req.user.id}\\${name}`
+                await file.update({
+                    path: name,
+                    name
+                })
+            }
+            await fileService.renameFile(oldPathName,newPathName)
+            return res.json(file)
+        }catch (e) {
+            return res.status(500).json({message: 'Cant rename file'})
+        }
+    }
 
     async move(req, res) {
         try {

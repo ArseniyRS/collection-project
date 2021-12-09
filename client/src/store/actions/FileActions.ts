@@ -1,5 +1,5 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
-import {createFileReq, getFilesReq, moveFileReq} from "../../api";
+import {createFileReq, deleteFileReq, getFilesReq, moveFileReq, renameFileReq} from "../../api";
 import {fileSlice} from "../reducers/FilesSlice";
 
 interface IGetFiles {
@@ -32,7 +32,17 @@ export const createFileAction = createAsyncThunk(
         }
     }
 )
-
+export const deleteFileAction = createAsyncThunk(
+    "files/delete",
+    async (id: number, thunkAPI) => {
+        try {
+            const {data} = await deleteFileReq(id)
+            return data
+        } catch (e) {
+            return thunkAPI.rejectWithValue(e.response.data.message || 'Ошибка')
+        }
+    }
+)
 
 export const moveFileAction = createAsyncThunk(
     "files/move",
@@ -40,6 +50,18 @@ export const moveFileAction = createAsyncThunk(
         try {
             console.log(positions)
             const {data} = await moveFileReq(positions)
+            return data
+        } catch (e) {
+            return thunkAPI.rejectWithValue(e.response.data.message || 'Ошибка')
+        }
+    }
+)
+
+export const renameFileAction = createAsyncThunk(
+    "files/rename",
+    async (renameData, thunkAPI) => {
+        try {
+            const {data} = await renameFileReq(renameData)
             return data
         } catch (e) {
             return thunkAPI.rejectWithValue(e.response.data.message || 'Ошибка')
