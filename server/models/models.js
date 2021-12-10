@@ -10,6 +10,7 @@ const File = seq.define('File',{
   size: {type: Sequelize.INTEGER, defaultValue: 0},
   path: {type: Sequelize.STRING, defaultValue: ''},
   orderId: {type: Sequelize.INTEGER, defaultValue: 0},
+  color: {type: Sequelize.STRING}
 })
 
 const User = seq.define('User',{

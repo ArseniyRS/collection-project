@@ -6,7 +6,6 @@ import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd'
 const FileList = ({moveHandler, openDirHandler}) => {
     const {files} = useAppSelector(state => state.fileReducer)
     const handleOnDragEnd = (res) => {
-        console.log(res)
         if (res.combine)
             return moveHandler({
                 parent: res.combine.droppableId,

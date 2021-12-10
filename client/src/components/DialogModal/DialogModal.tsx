@@ -26,12 +26,22 @@ const DialogModal = ({children}) => {
         okBtnLabel: 'Ok',
         cancelBtnLabel: 'Cancel'
     })
+    const handleChangeText = () => {
+        return (e) => setText(e.target.value)
+    }
     const handleClickOpen = () => {
         setOpen(true);
     };
     const handleClose = () => {
         setOpen(false);
     };
+
+    const handleSubmit = () => {
+        return (text) => {
+            handleClose()
+            modalConfig.afterSubmit(text)
+        }
+    }
     return (
         <>
             <Dialog open={open} onClose={handleClose}>
@@ -50,15 +60,12 @@ const DialogModal = ({children}) => {
                         defaultValue={modalConfig.defaultValue}
                         fullWidth
                         variant="outlined"
-                        onChange={(e) => setText(e.target.value)}
+                        onChange={handleChangeText()}
                     />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>{modalConfig.cancelBtnLabel}</Button>
-                    <Button onClick={() => {
-                        handleClose()
-                        modalConfig.afterSubmit(text)
-                    }}>{modalConfig.okBtnLabel}</Button>
+                    <Button onClick={handleSubmit()}>{modalConfig.okBtnLabel}</Button>
                 </DialogActions>
             </Dialog>
             <ModalContext.Provider value={{

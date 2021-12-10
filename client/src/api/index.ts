@@ -15,6 +15,7 @@ export const getFilesReq = (params) => {
     return instance.get(`files${Object.entries(params).reduce((prev, cur) => cur[1] ? prev + `${cur.join('=')}` : '', '?')}`, getToken());
 }
 export const createFileReq = (data) => instance.post(`files`, data, getToken());
-export const deleteFileReq = (id) => instance.delete(`files?id=${id}`,  getToken());
+export const deleteFileReq = (id, parent) => instance.delete(`files?id=${id}&parent=${parent}`, getToken());
 export const moveFileReq = (moveData) => instance.post(`files/move`, moveData, getToken());
 export const renameFileReq = (renameData) => instance.post(`files/rename`, renameData, getToken());
+export const changeFileColorReq = (fileData) => instance.post(`files/change-color`, fileData, getToken());

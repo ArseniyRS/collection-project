@@ -1,4 +1,6 @@
 import fs from 'fs'
+import {File} from "../models/models.js";
+import {Sequelize} from "sequelize";
 
 //import {File} from '../models/File.js'
 
@@ -40,6 +42,15 @@ class FileService {
                 return rej({message: 'File delete error'})
             }
         })
+    }
+
+    async getFilesWithCurDir(parent, user) {
+        try {
+            let files = await File.findAll({where: {UserId: user, FileId: parent === 'null' ?  null : parent},  order: ['orderId']})
+            return files
+        } catch (e) {
+            console.log(e)
+        }
     }
 }
 

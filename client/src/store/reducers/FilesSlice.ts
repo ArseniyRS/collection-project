@@ -1,5 +1,12 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {createFileAction, getFilesAction, moveFileAction} from "../actions/FileActions";
+import {
+    changeFileColorAction,
+    createFileAction,
+    deleteFileAction,
+    getFilesAction,
+    moveFileAction,
+    renameFileAction
+} from "../actions/FileActions";
 
 const initialState = {
     files: [],
@@ -41,18 +48,27 @@ export const fileSlice = createSlice({
             state.isLoading = false
             state.error = action.payload
         },
-        [createFileAction.pending.type]: state => {
-            state.isLoading = true
+
+        [createFileAction.pending.type ]: state => {
             state.error = ""
         },
-        [createFileAction.fulfilled.type]: (state, action: PayloadAction<any[]>) => {
-            state.isLoading = false
+        [createFileAction.fulfilled.type ]: (state, action: PayloadAction<any[]>) => {
             state.files = action.payload
         },
         [createFileAction.rejected.type]: (state, action: PayloadAction<string>) => {
-            state.isLoading = false
             state.error = action.payload
         },
+
+        [deleteFileAction.pending.type ]: state => {
+            state.error = ""
+        },
+        [deleteFileAction.fulfilled.type ]: (state, action: PayloadAction<any[]>) => {
+            state.files = action.payload
+        },
+        [deleteFileAction.rejected.type]: (state, action: PayloadAction<string>) => {
+            state.error = action.payload
+        },
+
         [moveFileAction.pending.type]: state => {
             state.error = ""
         },
@@ -60,6 +76,26 @@ export const fileSlice = createSlice({
             state.files = action.payload
         },
         [moveFileAction.rejected.type]: (state, action: PayloadAction<string>) => {
+            state.error = action.payload
+        },
+
+        [renameFileAction.pending.type]: state => {
+            state.error = ""
+        },
+        [renameFileAction.fulfilled.type]: (state, action: PayloadAction<any[]>) => {
+            state.files = action.payload
+        },
+        [renameFileAction.rejected.type]: (state, action: PayloadAction<string>) => {
+            state.error = action.payload
+        },
+
+        [changeFileColorAction.pending.type]: state => {
+            state.error = ""
+        },
+        [changeFileColorAction.fulfilled.type]: (state, action: PayloadAction<any[]>) => {
+            state.files = action.payload
+        },
+        [changeFileColorAction.rejected.type]: (state, action: PayloadAction<string>) => {
             state.error = action.payload
         },
     }
