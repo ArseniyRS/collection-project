@@ -1,8 +1,6 @@
 import fs from 'fs'
 import {File} from "../models/models.js";
-import {Sequelize} from "sequelize";
 
-//import {File} from '../models/File.js'
 
 class FileService {
     createDir(file) {
@@ -46,7 +44,7 @@ class FileService {
 
     async getFilesWithCurDir(parent, user) {
         try {
-            let files = await File.findAll({where: {UserId: user, FileId: parent === 'null' ?  null : parent},  order: ['orderId']})
+            let files = await File.findAll({where: {UserId: user, FileId: parent === 'null' || !parent ?  null : parent},  order: ['orderId']})
             return files
         } catch (e) {
             console.log(e)

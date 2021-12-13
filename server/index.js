@@ -1,12 +1,9 @@
 import express from 'express';
 import dotenv from 'dotenv'
-
 dotenv.config();
-import authRouter from './routes/user.routes.js'
-import fileRouter from './routes/file.routes.js'
 import cors from 'cors'
 import sequelize from './db.js'
-
+import fileUpload from 'express-fileupload'
 const app = express();
 import routes from './routes/index.js'
 //const WSServer = require('express-ws')(app)
@@ -27,6 +24,7 @@ import routes from './routes/index.js'
 //     origin: "http://10.244.10.12:5000",
 //   })
 // );
+app.use(fileUpload({}))
 app.use(cors())
 app.use(express.json());
 app.use('/api', routes)

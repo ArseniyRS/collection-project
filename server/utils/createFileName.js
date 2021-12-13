@@ -1,15 +1,14 @@
 import fs from 'fs'
 
-export const createFileName = (file, number = 1) => {
-    const filePath = `${process.env.FILE_PATH}\\${file.UserId}\\${file.path}\\${file.name}`
+export const createFileName = ({name, path = '', UserId, type = 'dir'}, number = 1) => {
+    const filePath = `${process.env.FILE_PATH}\\${UserId}\\${path}\\${name}.${type}`
     if (!fs.existsSync(filePath)) {
-        return file.name
-    }
-    else {
+        return  type === 'dir' ? name : `${name}.${type}`
+    } else {
         if (number > 1)
-            file.name =  file.name.replace(/\(\d+\)/, `(${number})`)
+            name = name.replace(/\(\d+\)/, `(${number})`)
         else
-            file.name += ` (1)`
-        return createFileName(file, number+1)
+            name += ` (1)`
+        return createFileName({name, path, UserId, type}, number + 1)
     }
 }

@@ -13,7 +13,7 @@ class UserController {
             const hashPassword = await bcrypt.hash(password, 5)
 
             const user = await User.create({email, username, password: hashPassword})
-            await fileService.createDir({user: user.id, path: ''})
+            await fileService.createDir({UserId: user.id, path: ''})
             return res.json({message: 'User was created', user})
         } catch (e) {
             return res.status(500).json({message: e})

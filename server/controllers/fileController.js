@@ -1,5 +1,5 @@
 import fileService from '../services/fileService.js'
-import {File} from '../models/models.js'
+import {File, User} from '../models/models.js'
 import {createFileName} from "../utils/createFileName.js";
 import dbContext from "../db.js";
 import {getAggregateValue} from "../utils/getAggregateValue.js";
@@ -20,9 +20,7 @@ class FileController {
             const maxOrderId = await dbContext.query(`select max("orderId") from "Files" where "UserId" = ${req.user.id}`, {raw: true})
             file.orderId = getAggregateValue(maxOrderId) + 1
             await file.save()
-            console.log(parent, req.user.id)
             let files = await fileService.getFilesWithCurDir(parent, req.user.id)
-            console.log(files)
             return res.json(files)
         } catch (e) {
             console.log(e)
@@ -103,6 +101,64 @@ class FileController {
             return res.json(files)
         } catch (e) {
             return res.status(500).json({message: 'Cant change file color'})
+        }
+    }
+
+    async uploadFile(req, res) {
+        try {
+            const file = req.files.file
+
+            const user = await User.findOne({where: {id: req.user.id}})
+            if (user.usedSpace + file.size > user.storageSpace) {
+                return res.status(400).json({message: 'No space on the disk'})
+            }
+            const maxOrderId = await dbContext.query(`select max("orderId") from "Files" where "UserId" = ${req.user.id}`, {raw: true})
+            const type = file.name.split('.').pop()
+            const nameWithOutExt = file.name.split('.').slice(0, -1).join('.')
+            let newName = file.name
+            if (req.body.parent) {
+                const parent = await File.findOne({where: {UserId: req.user.id, id: req.body.parent}})
+                newName = createFileName({
+                    name: nameWithOutExt,
+                    UserId: req.user.id,
+                    path: parent.path,
+                    type
+                })
+                await file.mv(`${process.env.FILE_PATH}\\${req.user.id}\\${parent.path || ''}\\${newName}`)
+
+                const newFile = File.build({
+                    name: newName,
+                    size: file.size,
+                    path: `${parent.path}/${newName}`,
+                    type,
+                    FileId: req.body.parent,
+                    orderId: getAggregateValue(maxOrderId) + 1,
+                    UserId: req.user.id
+                })
+                await newFile.save()
+            }
+            newName = createFileName({
+                name: nameWithOutExt,
+                UserId: req.user.id,
+                type
+            })
+            await file.mv(`${process.env.FILE_PATH}\\${req.user.id}\\${newName}`)
+            await File.create({
+                name: newName,
+                type,
+                path: newName,
+                size: file.size,
+                orderId: getAggregateValue(maxOrderId) + 1,
+                UserId: req.user.id
+            })
+            await user.update({
+                usedSpace: user.usedSpace + file.size
+            })
+            let files = await fileService.getFilesWithCurDir(req.body.parent, req.user.id)
+            return res.json(files)
+        } catch (e) {
+            console.log(e)
+            return res.status(500).json({message: 'upload file error'})
         }
     }
 

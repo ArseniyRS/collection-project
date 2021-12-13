@@ -10,4 +10,5 @@ router.delete('/', authMiddleware, fileController.deleteFile)
 router.post('/move', authMiddleware, fileController.move)
 router.post('/rename', authMiddleware, fileController.rename)
 router.post('/change-color', authMiddleware, fileController.changeColor)
+router.post('/upload', authMiddleware, fileController.uploadFile)
 export default router
