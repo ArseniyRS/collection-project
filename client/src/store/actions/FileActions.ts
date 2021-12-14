@@ -25,6 +25,7 @@ export const createFileAction = createAsyncThunk(
     "files/create",
     async (fileData, thunkAPI) => {
         try {
+            console.log('called')
             const {data} = await createFileReq(fileData)
             return data
         } catch (e) {

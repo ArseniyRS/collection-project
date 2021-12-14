@@ -4,16 +4,20 @@ import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import {useOutsideAlerter} from "../../hooks/useOutsideDetect";
 import {changeFileColorAction, deleteFileAction, renameFileAction} from "../../store/actions/FileActions";
 import {useAppDispatch} from "../../hooks/redux";
-import {ModalContext} from "../context/ModalContext";
+import {DropzoneContext, ModalContext} from "../context/ModalContext";
 import {isBoolean} from "util";
 
 
-
-const FileItem = ({id, name,color, size, updatedAt, FileId, type, openDir}) => {
+const FileItem = ({id, name, color, size, updatedAt, FileId, type, openDir}) => {
+    const {isDragActive, setDropzoneFileId} = useContext(DropzoneContext)
     const [isOpenMenu, setIsOpenMenu] = useState(false)
     const [elAnchor, setElAnchor] = useState(null)
     const [posMenu, setPosMenu] = useState({x: 0, y: 0})
     const closeMenu = () => setIsOpenMenu(false)
+    useEffect(() => {
+        if (type === 'dir')
+            setDropzoneFileId(id)
+    }, [])
     const handleOpenDir = () => {
         return () => type === 'dir' && openDir({id, name, FileId, type})
     }
@@ -27,7 +31,8 @@ const FileItem = ({id, name,color, size, updatedAt, FileId, type, openDir}) => {
     }
     return (
         <>
-            <div className={'fileItem'} onDoubleClick={handleOpenDir()}
+            <div className={`fileItem ${(isDragActive && type === 'dir') && 'fileItem--dragActive'}`}
+                 onDoubleClick={handleOpenDir()}
                  onContextMenu={handleContextMenu()}
             >
                 {type === 'dir' ?
@@ -51,7 +56,7 @@ const FileItem = ({id, name,color, size, updatedAt, FileId, type, openDir}) => {
         </>
     );
 };
-const FileItemMenu = ({id, name,color, closeMenu, pos}) => {
+const FileItemMenu = ({id, name, color, closeMenu, pos}) => {
     const {openModal, setModalConfig} = useContext(ModalContext)
     const [isOpenColorPicker, setIsOpenColorPicker] = useState(false)
     const [anchorEl, setAnchorEl] = useState(false)
@@ -99,7 +104,8 @@ const FileItemMenu = ({id, name,color, closeMenu, pos}) => {
         >
             <li className={'fileItem-menu__item'} onClick={handleOpenColorPicker()}>
                 Изменить цвет
-                {isOpenColorPicker && <ColorMenu fileId={id} activeColor={color} setOpen={setIsOpenColorPicker} anchorEl={anchorEl}/>}
+                {isOpenColorPicker &&
+                <ColorMenu fileId={id} activeColor={color} setOpen={setIsOpenColorPicker} anchorEl={anchorEl}/>}
             </li>
             <li className={'fileItem-menu__item'} onClick={handleOpenModal()}>Переименовать</li>
             <li className={'fileItem-menu__item'} onClick={handleDelete()}>Удалить</li>
@@ -120,17 +126,17 @@ const ColorMenu = ({fileId, activeColor, setOpen}) => {
     console.log(activeColor)
     return (
 
-            <div className={'color-menu'}>
-                {colors.map((color, index) => <div
-                    key={index}
-                    className={`color-menu__item ${color === activeColor ?'color-menu__item--active' : ''}`}
-                    onClick={()=>{
-                        if(color !== activeColor)
-                            dispatch(changeFileColorAction({id: fileId, color}))
-                        return setOpen(false)
-                    }}
-                    style={{background: color}}/>)}
-            </div>
+        <div className={'color-menu'}>
+            {colors.map((color, index) => <div
+                key={index}
+                className={`color-menu__item ${color === activeColor ? 'color-menu__item--active' : ''}`}
+                onClick={() => {
+                    if (color !== activeColor)
+                        dispatch(changeFileColorAction({id: fileId, color}))
+                    return setOpen(false)
+                }}
+                style={{background: color}}/>)}
+        </div>
     )
 }
 export default FileItem;

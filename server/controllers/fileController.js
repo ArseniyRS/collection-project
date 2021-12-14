@@ -125,7 +125,6 @@ class FileController {
                     type
                 })
                 await file.mv(`${process.env.FILE_PATH}\\${req.user.id}\\${parent.path || ''}\\${newName}`)
-
                 const newFile = File.build({
                     name: newName,
                     size: file.size,
@@ -171,7 +170,7 @@ class FileController {
                 const movingFile = await File.findOne({where: {id: +fileId}})
                 const fromPath = `${process.env.FILE_PATH}\\${req.user.id}\\${movingFile.path}`
                 const toPath = `${process.env.FILE_PATH}\\${req.user.id}\\${parentFile.path}\\${movingFile.name}`
-                await fileService.renameFile(fromPath, toPath)
+                await fileService.renameFile(fromPath, toPath, true)
                 await movingFile.update({FileId: +parent, path: `${parentFile.path}\\${movingFile.name}`})
                 files = await File.findAll({where: {FileId: parentFile.FileId}})
             } else {

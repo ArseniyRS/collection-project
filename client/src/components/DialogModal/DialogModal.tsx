@@ -37,7 +37,7 @@ const DialogModal = ({children}) => {
     };
 
     const handleSubmit = () => {
-        return (text) => {
+        return () => {
             handleClose()
             modalConfig.afterSubmit(text)
         }

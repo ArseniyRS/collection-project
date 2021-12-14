@@ -1,7 +1,9 @@
-import React from 'react';
-import {useAppSelector} from "../../hooks/redux";
+import React, {useContext} from 'react';
+import Dropzone from "../Providers/Dropzone";
+import FileListEmptySpace from "./FileListEmptySpace";
+import {DragDropContext, Draggable, Droppable} from "react-beautiful-dnd";
 import FileItem from "./FileItem";
-import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd'
+import {useAppSelector} from "../../hooks/redux";
 
 const FileList = ({moveHandler, openDirHandler}) => {
     const {files} = useAppSelector(state => state.fileReducer)
@@ -27,25 +29,30 @@ const FileList = ({moveHandler, openDirHandler}) => {
             <DragDropContext onDragEnd={handleOnDragEnd}>
                 {files.map((file, index) => {
                     return (
-                        <Droppable droppableId={file.id.toString()} key={file.id.toString()} isCombineEnabled>
-                            {(provided) => (
-                                <div className="characters" {...provided.droppableProps} ref={provided.innerRef}>
-                                    <Draggable draggableId={file.id.toString()} index={file.orderId}>
-                                        {(provided) => (
-                                            <div
-                                                ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                                                <FileItem openDir={openDirHandler}  {...file}/>
-                                            </div>
-                                        )}
-                                    </Draggable>
-
-                                    {provided.placeholder}
-                                </div>
-                            )}
-                        </Droppable>
+                        <Dropzone key={file.id}>
+                            <Droppable droppableId={file.id.toString()} isCombineEnabled>
+                                {(provided) => (
+                                    <div className="characters" {...provided.droppableProps}
+                                         ref={provided.innerRef}>
+                                        <Draggable draggableId={file.id.toString()} index={file.orderId}>
+                                            {(provided) => (
+                                                <div
+                                                    ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                                                    <FileItem openDir={openDirHandler}  {...file}/>
+                                                </div>
+                                            )}
+                                        </Draggable>
+                                        {provided.placeholder}
+                                    </div>
+                                )}
+                            </Droppable>
+                        </Dropzone>
                     )
                 })}
             </DragDropContext>
+            <Dropzone>
+                <FileListEmptySpace />
+            </Dropzone>
         </div>
     );
 };

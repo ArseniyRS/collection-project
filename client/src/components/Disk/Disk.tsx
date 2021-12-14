@@ -63,39 +63,39 @@ const Disk = () => {
                 defaultValue: name,
                 okBtnLabel: 'ОК',
                 cancelBtnLabel: 'Отмена',
-                afterSubmit: handleCreateFolder()
+                afterSubmit: handleCreateFolder
             })
             openModal()
         }
     }
-    const handleCreateFolder = () => {
-        return (text) => dispatch(createFileAction({
-            name: text,
-            type: 'dir',
-            parent: currentDir
-        }))
-    }
-    return (
-        <div className={'disk'}>
-            <div className="disk-manager">
-                <div className="disk-btns">
-                    <Button
-                        className="disk-btns__create" variant={'contained'}
-                        onClick={handleClickOpenModal()}>Создать<CreateNewFolderIcon/>
-                    </Button>
-                    {currentDir &&
-                    <Button className="disk-btns__back" variant={'outlined'}
-                            onClick={backDirHandler}>Назад</Button>}
-                </div>
-                <div className={'disk-management'}>
+    const handleCreateFolder = (text) =>  dispatch(createFileAction({
+                name: text,
+                type: 'dir',
+                parent: currentDir
+            }))
 
-                    <FileBreadcrumbs crumbDirHandler={crumbDirHandler}/>
-                    <FileSearch onSearch={searchFiles}/>
-                </div>
+return (
+    <div className={'disk'}>
+        <div className="disk-manager">
+            <div className="disk-btns">
+                <Button
+                    className="disk-btns__create" variant={'contained'}
+                    onClick={handleClickOpenModal()}>Создать<CreateNewFolderIcon/>
+                </Button>
+                {currentDir &&
+                <Button className="disk-btns__back" variant={'outlined'}
+                        onClick={backDirHandler}>Назад</Button>}
             </div>
-            <FileList openDirHandler={openDirHandler} moveHandler={moveHandler}/>
+            <div className={'disk-management'}>
+
+                <FileBreadcrumbs crumbDirHandler={crumbDirHandler}/>
+                <FileSearch onSearch={searchFiles}/>
+            </div>
         </div>
-    );
-};
+        <FileList openDirHandler={openDirHandler} moveHandler={moveHandler}/>
+    </div>
+);
+}
+;
 
 export default Disk;

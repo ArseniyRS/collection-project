@@ -1,4 +1,5 @@
 import fs from 'fs'
+import fse from 'fs-extra'
 import {File} from "../models/models.js";
 
 
@@ -16,12 +17,18 @@ class FileService {
         })
     }
 
-    renameFile(from, to) {
+    renameFile(from, to, move = false) {
         return new Promise((res, rej) => {
             try {
-                fs.renameSync(from, to)
+                if(move) {
+                    fse.copySync(from, to, {overwrite: true})
+                    fs.rmSync(from, {recursive: true})
+                }
+                else
+                    fs.renameSync(from, to)
                 return res({message: 'File was moved'})
             } catch (e) {
+                console.log(e)
                 return rej({message: 'Move file error'})
             }
         })
@@ -44,7 +51,10 @@ class FileService {
 
     async getFilesWithCurDir(parent, user) {
         try {
-            let files = await File.findAll({where: {UserId: user, FileId: parent === 'null' || !parent ?  null : parent},  order: ['orderId']})
+            let files = await File.findAll({
+                where: {UserId: user, FileId: parent === 'null' || !parent ? null : parent},
+                order: ['orderId']
+            })
             return files
         } catch (e) {
             console.log(e)
